@@ -1,0 +1,8 @@
+FROM jupyter/scipy-notebook
+
+# Installing Polyglot in an Environment
+RUN conda install -c conda-forge pyicu
+RUN pip install pycld2 morfessor polyglot
+# Downloading models
+RUN polyglot download LANG:en
+RUN polyglot download LANG:ru

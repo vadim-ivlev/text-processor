@@ -1,0 +1,15 @@
+version: "3"
+
+services: 
+    text-analyzer:
+        # image: jupyter/scipy-notebook
+        image: polyglot-processor
+        build: 
+            context: .
+            dockerfile: Dockerfile-polyglot
+        container_name: polyglot-processor
+        ports: 
+            - 9999:8888
+        volumes: 
+            - ./text-processor:/home/jovyan/work
+        command: /opt/conda/bin/jupyter notebook  --ip='*' --port=8888 --no-browser --allow-root --notebook-dir=/home/jovyan/work --NotebookApp.token=''

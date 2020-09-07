@@ -1,0 +1,41 @@
+
+#  сервер text-processor
+:8080 {
+    # Кросдоменность
+    header * {
+        # Access-Control-Allow-Origin *
+        # Access-Control-Allow-Headers *
+        Access-Control-Allow-Headers Content-Type
+    }
+
+    file_server * browse {
+        root   /www
+    }    
+    # # Матчер приложения
+    # @process {
+    #     # method GET OPTIONS
+    #     method GET OPTIONS POST DELETE PUT
+    #     path /process/* 
+    # }
+
+    # # маршрут process без аутентификации
+    # route @process {
+    #     uri strip_prefix /process
+    #     reverse_proxy  text-processor-0:5000 text-processor-1:5000 text-processor-2:5000 text-processor-3:5000 
+    # }
+
+    # маршрут приложения
+    route /process/* {
+        uri strip_prefix /process
+        reverse_proxy text-processor-0:5000 text-processor-1:5000 text-processor-2:5000 text-processor-3:5000 {
+            # least_conn - choose upstream with fewest number of current requests
+            # random - randomly choose an upstream (default)
+            # random_choose <n> - selects two or more upstreams randomly, then chooses one with least load (n is usually 2)
+            # round_robin - iterate each upstream in turn
+
+            lb_policy round_robin
+        }
+    }
+}
+
+

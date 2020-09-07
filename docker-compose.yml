@@ -1,0 +1,16 @@
+version: "3"
+
+services: 
+    text-processor-notebook:
+        # image: jupyter/scipy-notebook
+        image: text-processor-notebook
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        container_name: text-processor-notebook
+        ports: 
+            - 9999:8888
+        volumes: 
+            - .:/home/jovyan/work
+            - /Volumes/ssd/rg-db:/sqlite-data
+        command: /opt/conda/bin/jupyter notebook  --ip='*' --port=8888 --no-browser --allow-root --notebook-dir=/home/jovyan/work --NotebookApp.token=''
