@@ -29,15 +29,14 @@ services:
             dockerfile: Dockerfile
         container_name: text-processor-3
     
-    # Caddy HTTP сервер, добавлен для
-    # ограничения доступа к elasticsearch со стороны внешних программ.
+    # Балансер нагрузки.
     # Параметры проксирования определены в Caddyfile
-    version-store-caddy:
+    text-processor-caddy:
         image: caddy:2.0.0-alpine
-        container_name: version-store-caddy
+        container_name: text-processor-caddy
         restart: unless-stopped
         ports:
-        - '8080:8080'
+        - '9555:8080'
         volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
         - ./www:/www

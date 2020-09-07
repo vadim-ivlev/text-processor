@@ -13,7 +13,7 @@ import asyncio
 import timeit
 
 # API Конечная точка
-url = 'http://localhost:8080/process/process'
+url = 'http://localhost:9555/process/process'
 
 # Данные для посылки на сервер.
 data = {

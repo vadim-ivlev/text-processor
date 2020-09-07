@@ -98,8 +98,8 @@ def get_entities_dict(doc):
 
 def get_entities_list(doc):
     return [{'type':sp.type, 
-             #'name': doc.text[sp.start:sp.stop], 
-             'name':sp.normal} for sp in doc.spans]
+            #'name': doc.text[sp.start:sp.stop], 
+            'name':sp.normal} for sp in doc.spans]
 
 def get_entities_agg_list(doc):
     dd = defaultdict(lambda: {'type':'', 'count':0})
