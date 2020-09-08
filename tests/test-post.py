@@ -13,7 +13,9 @@ import asyncio
 import timeit
 
 # API Конечная точка
-url = 'http://localhost:9555/process/process'
+url = 'http://localhost:9555/process/text-entities' # local test
+# url = 'http://localhost:5000/text-entities' # local dev
+# url = 'https://text-processor.rg.ru/process/process'  # deploy server
 
 # Данные для посылки на сервер.
 data = {
@@ -21,17 +23,18 @@ data = {
 }
 
 # Количество запросов  в серии.
-N = 10
+N = 100
 
 responses = []
 
 # Делаем один запрос.
 def request(i,data):
-    print(f'{i} request...')
+    print(f'{i} req started')
     r = requests.post(url, json=data)
     j = r.json()
     s = json.dumps(j, indent=2, ensure_ascii=False)
-    summary = f'{i} host={j["host"]} time={j["time"]:.2} len={len(s)}'
+    # summary = f'{i} host={j["host"]} time={j["time"]:.2} len={len(s)}'
+    summary = f'{i} req finished. {j.get("host","")} {j.get("time",-1):.2} sec. {len(s)} bytes.'
     print(summary)
     return summary
     
@@ -61,10 +64,11 @@ def start_make_concurrent_requests(N):
 # Код основной программы.
 
 
-t = timeit.timeit(lambda: make_sequential_requests(N), number=1)
-print(f'{N} Последовательных запросов закончены за {t:.3} sec. Среднее время на запрос {t/N:.3} sec.')
+# t = timeit.timeit(lambda: make_sequential_requests(N), number=1)
+# print(f'{N} Последовательных запросов закончены за {t:.3} sec. Среднее время на запрос {t/N:.3} sec.')
 
 t = timeit.timeit(lambda: start_make_concurrent_requests(N), number=1)
 print(f'{N} Параллельных запросов закончены за {t:.3} sec. Среднее время на запрос {t/N:.3} sec.')
 
-# print(len(result))
+s = json.dumps(responses, indent=2, ensure_ascii=False)
+# print(s)

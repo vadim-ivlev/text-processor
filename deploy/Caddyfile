@@ -11,22 +11,12 @@
     file_server * browse {
         root   /www
     }    
-    # # Матчер приложения
-    # @process {
-    #     # method GET OPTIONS
-    #     method GET OPTIONS POST DELETE PUT
-    #     path /process/* 
-    # }
 
-    # # маршрут process без аутентификации
-    # route @process {
-    #     uri strip_prefix /process
-    #     reverse_proxy  text-processor-0:5000 text-processor-1:5000 text-processor-2:5000 text-processor-3:5000 
-    # }
 
     # маршрут приложения
     route /process/* {
         uri strip_prefix /process
+        # reverse_proxy text-processor-0:5000 text-processor-1:5000 text-processor-2:5000 {
         reverse_proxy text-processor-0:5000 text-processor-1:5000 text-processor-2:5000 text-processor-3:5000 {
             # least_conn - choose upstream with fewest number of current requests
             # random - randomly choose an upstream (default)

@@ -1,12 +1,17 @@
 version: "3"
 
 services: 
+    # Реплики для лучшего распараллеливания между процессорами -----------------------------------------
     text-processor-0:
         image: text-processor
         build: 
             context: .
             dockerfile: Dockerfile
         container_name: text-processor-0
+        hostname: text-processor-0
+        restart: unless-stopped
+        # ports: 
+        #     - 5000:5000
     
     text-processor-1:
         image: text-processor
@@ -14,6 +19,8 @@ services:
             context: .
             dockerfile: Dockerfile
         container_name: text-processor-1
+        hostname: text-processor-1
+        restart: unless-stopped
     
     text-processor-2:
         image: text-processor
@@ -21,6 +28,8 @@ services:
             context: .
             dockerfile: Dockerfile
         container_name: text-processor-2
+        hostname: text-processor-2
+        restart: unless-stopped
     
     text-processor-3:
         image: text-processor
@@ -28,8 +37,10 @@ services:
             context: .
             dockerfile: Dockerfile
         container_name: text-processor-3
+        hostname: text-processor-3
+        restart: unless-stopped
     
-    # Балансер нагрузки.
+    # Балансер нагрузки. -------------------------------------------------------------------------------
     # Параметры проксирования определены в Caddyfile
     text-processor-caddy:
         image: caddy:2.0.0-alpine
@@ -41,7 +52,7 @@ services:
         - ./Caddyfile:/etc/caddy/Caddyfile
         - ./www:/www
 
-# outer network to communicate with other services 
+# outer network to communicate with other services ----------------------------------------------------
 networks:
     default:
         external:

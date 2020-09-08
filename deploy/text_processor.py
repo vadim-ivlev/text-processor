@@ -148,7 +148,7 @@ def process_text(html, clear=False):
         'time': int((end-start)*1000)/1000,
         'lemm_num': lem0,
         'lemm_num_cleared': lem1,
-        'host': socket.gethostname()
+        'host': socket.gethostname(),
     }
 
 
@@ -161,4 +161,5 @@ def process_entities(html):
     return {
         'entities': entities,
         'time': int((end-start)*1000)/1000,
+        'host': socket.gethostname(),
     }
