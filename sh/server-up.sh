@@ -4,7 +4,7 @@
 
 echo "Стартуем Text-processor server..."
 
-docker-compose -f deploy/docker-compose.yml up -d
+docker-compose -f deploy/docker-compose.yml up -d --build
 
 # Если предыдущая команда выполнилась удачно печатаем приглашение.
 if [ $? -eq 0 ]; then

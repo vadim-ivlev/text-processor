@@ -3,7 +3,7 @@ version: "3"
 services: 
     # Реплики для лучшего распараллеливания между процессорами -----------------------------------------
     text-processor-0:
-        image: text-processor
+        image: text-processor-prod
         build: 
             context: .
             dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
         #     - 5000:5000
     
     text-processor-1:
-        image: text-processor
+        image: text-processor-prod
         build: 
             context: .
             dockerfile: Dockerfile
@@ -23,7 +23,7 @@ services:
         restart: unless-stopped
     
     text-processor-2:
-        image: text-processor
+        image: text-processor-prod
         build: 
             context: .
             dockerfile: Dockerfile
@@ -32,7 +32,7 @@ services:
         restart: unless-stopped
     
     text-processor-3:
-        image: text-processor
+        image: text-processor-prod
         build: 
             context: .
             dockerfile: Dockerfile
