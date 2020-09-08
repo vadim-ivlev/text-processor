@@ -13,8 +13,8 @@ import asyncio
 import timeit
 
 # API Конечная точка
-url = 'http://localhost:9555/process/text-entities' # local test
-# url = 'http://localhost:5000/text-entities' # local dev
+url = 'http://localhost:9555/process/lemmas-entities' # local test
+# url = 'http://localhost:5000/lemmas-entities' # local direct  to flask
 # url = 'https://text-processor.rg.ru/process/process'  # deploy server
 
 # Данные для посылки на сервер.

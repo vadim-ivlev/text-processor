@@ -17,13 +17,13 @@ def hello_world():
     return 'TEXT-PROCESSOR'
 
 
-@app.route('/text-entities', methods=['POST'])
+@app.route('/lemmas-entities', methods=['POST'])
 def text_entities():
     text = get_text()
     o = text_processor.process_text(text)
     return make_response(o)
 
-@app.route('/clear-text-entities', methods=['POST'])
+@app.route('/clear-lemmas-entities', methods=['POST'])
 def clear_text_entities():
     text = get_text()
     o = text_processor.process_text(text, clear=True)

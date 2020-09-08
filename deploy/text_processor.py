@@ -142,12 +142,12 @@ def process_text(html, clear=False):
     entities = get_entities(doc)
     end = time.time()
     return {
-        'lemmatized_text': lemmatized_text,
-        'cleared': clear,
         'entities': entities,
-        'time': int((end-start)*1000)/1000,
+        'cleared': clear,
         'lemm_num': lem0,
         'lemm_num_cleared': lem1,
+        'lemmatized_text': lemmatized_text,
+        'time': int((end-start)*1000)/1000,
         'host': socket.gethostname(),
     }
 

@@ -4,7 +4,7 @@
 
 
 # Переменные, используемые в основном цикле
-url='http://localhost:9555/process/process-all'
+url='http://localhost:9555/lemmas-entities'
 header='Content-Type: application/json'
 data='
 {
