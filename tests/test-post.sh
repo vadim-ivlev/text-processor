@@ -4,7 +4,7 @@
 
 
 # Переменные, используемые в основном цикле
-url='http://localhost:9555/lemmas-entities'
+url='http://localhost:9555/process/lemmas-entities'
 header='Content-Type: application/json'
 data='
 {

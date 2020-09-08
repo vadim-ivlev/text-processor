@@ -121,6 +121,7 @@ data='
 
       tests/test-post.sh   
       python tests/test-post.py 
+      go run tests/*.go  
 
 Код 
 ----

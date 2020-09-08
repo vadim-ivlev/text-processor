@@ -1,53 +1,108 @@
 package main
 
-import {
+import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"time"
+)
+
+// Конечная точка API
+// var apiUrl = "http://localhost:9555/process/lemmas-entities"
+var apiUrl = "https://text-processor.rg.ru/process/lemmas-entities"
+
+// пример текста
+var textSample = `<p>Глава государства начал встречу сразу с проблемных вопросов: в регионе сокращается сельхозпроизводство  на фоне солидного роста по стране. Голубев выразил надежду, что в этом году тенденцию удастся переломить.  Президент заметил: если необходима поддержка, то нужно сформулировать просьбы. "И по стройке: сокращаются  и объемы строительства. Здесь что?" - уточнил он. Собеседник рассказал о заметном сокращении индивидуального  жилищного строительства. В целом строительная программа "плюсует", но жилье "минусует", признал Голубев.  "Поэтому это стало нашим приоритетом", - заверил региональный лидер.</p><p>"Вы человек очень опытный, знаете,  мы последнее время, последние годы большое внимание обращаем на проблемы демографии", - заметил Путин.  По его словам, после определенного подъема у нас сейчас наблюдается сокращение численности постоянного населения.  "Но в Ростовской области, несмотря на то, что это южный, благоприятный климатически регион,  сокращение происходит даже в большем объеме, чем в среднем по стране", - сказал президент и назвал возможные  причины: недостаточное количество врачей и мест в детсадах. "Это очень важный фактор для того, чтобы люди себя  чувствовали уверенно и комфортно", - объяснил глава государства.</p><p>Важен и такой показатель, как уровень  безработицы. "Ясно, что это сегодня одна из главных проблем в стране, это совершенно очевидно", - заметил Путин.  Но Ростовская область развита и в промышленном отношении, и в отношении возможностей для сельского хозяйства.  "Конечно, нужно обратить внимание на рынок труда", - указал президент.</p><p>"У нас действительно "выскочила"  реально безработица - 96 с лишним тысяч человек (4,6 процента) при том, что до определенного времени уровень  безработицы был не выше или на уровне среднероссийского, - признал губернатор. - Мы предпринимаем сейчас меры  для того, чтобы максимально запустить те механизмы, которые позволяют людям работать". "Мы будем искать  новые решения. Я думаю, что для нас это важнейшая задача, усилия будем прилагать для того, чтобы здесь ситуацию  переломить", - заверил он.</p><div class="incut">В Ростовской области минимальная долговая нагрузка, низкий  уровень аварийного жилья и очень хорошие перспективы с точки зрения инвестпроектов&nbsp;</div><p>Глава государства  также заявил, что опережающий темп роста промышленного производства - заслуга самого Голубева и его команды.  За первое полугодие, конечно, есть спад, но он меньше, чем по стране. В нормальном состоянии и региональные финансы,  в области минимальная долговая нагрузка, низкий уровень аварийного жилья и очень хорошие перспективы с точки  зрения инвестпроектов, оценил Путин. Президент призвал поддержать усилия бизнеса по созданию новых, хорошо  оплачиваемых, качественных и современных высокотехнологичных рабочих мест. Голубев также сообщил, что  селяне прекрасно сработали по уборке ранних зерновых, и президент одобрил предложение наградить их.</p><div  class="Section">Между тем</div><p>Состоялся телефонный разговор Владимира Путина с президентом Республики  Беларусь Александром Лукашенко, сообщили в пресс-службе Кремля. Александр Лукашенко проинформировал о предпринимаемых  мерах в целях нормализации обстановки в стране. Затрагивалась также тематика двустороннего сотрудничества в вопросах  противодействия коронавирусной инфекции.</p> `
+
+// Таймаут запросов к API
+var requestTimeout = 30
+
+func main() {
+	// Количество запросов
+	var n = 20
+	fmt.Println("Ппоследовательные запросы **********************************")
+
+	startTime := time.Now()
+	makeSequentialRequests(n)
+	duration := time.Since(startTime)
+
+	fmt.Println("Параллельные запросы **********************************")
+
+	startTime1 := time.Now()
+	res := makeConcurentRequests(n)
+	duration1 := time.Since(startTime1)
+
+	fmt.Println("Результаты **********************************")
+	fmt.Println(len(res))
+
+	fmt.Println("SUMMARY *********************", apiUrl)
+	fmt.Printf("%d последовательных запросов. Время = %.2f sec. 1 запрос занял = %.3f sec .\n", n, sec(duration), sec(duration)/float64(n))
+	fmt.Printf("%d параллельных запросов. Время = %.2f sec. 1 запрос занял = %.3f sec .\n", n, sec(duration1), sec(duration1)/float64(n))
 }
 
-
-
-func main(){
-	var N = 10
-	var c = make(chan []string)
-
-	for i := 0; i < N; i++ {
-		go doRequest(c)
-	}
-
-
-	for i := 0; i < N; i++ {
-		s<-c
-		fmt.Println(s)
-	}
+func sec(duration time.Duration) float64 {
+	return float64(duration/time.Millisecond) / 1000
 }
 
+func makeSequentialRequests(n int) []string {
+	var results = make([]string, 0)
+	for i := 0; i < n; i++ {
+		fmt.Printf("started %d out of %d \n", i, n)
+		r := makeAPIRequest(textSample)
+		results = append(results, r)
+		fmt.Printf("finished %d out of %d \n", i, n)
+	}
+	return results
+}
+
+func makeConcurentRequests(n int) []string {
+	var c = make(chan string)
+	// запускаем запросы
+	for i := 0; i < n; i++ {
+		go func(ch chan string, txt string, i, n int) {
+			fmt.Printf("started %d out of %d \n", i, n)
+			c <- makeAPIRequest(textSample)
+			fmt.Printf("finished %d out of %d \n", i, n)
+		}(c, textSample, i, n)
+	}
+	// собираем ответы
+	var results = make([]string, 0)
+	for i := 0; i < n; i++ {
+		results = append(results, <-c)
+	}
+	return results
+}
 
 //  записывает результат запроса в канал
-func doRequest(с ) {
+func makeAPIRequest(text string) string {
+	reqBody, err := json.Marshal(map[string]string{
+		"text": text,
+	})
+
 	client := http.Client{
 		Timeout: time.Duration(requestTimeout) * time.Second,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf(urlArticle, id), nil)
+	req, err := http.NewRequest("POST", apiUrl, bytes.NewBuffer(reqBody))
 	if err != nil {
 		fmt.Println(err)
 	}
 	req.Close = true
 	req.Header.Set("Connection", "close")
+	req.Header.Set("Content-Type", "application/json; ")
 
 	resp, err := client.Do(req)
-
-	// resp, err := http.Get(fmt.Sprintf(urlArticle, id))
 	if err != nil {
 		fmt.Println(err)
-		return []string{id, ""}
+		return ""
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
-		return []string{id, ""}
+		return ""
 	}
-	s := string(body)
-	return []string{id, s}
+	return string(body)
 }
