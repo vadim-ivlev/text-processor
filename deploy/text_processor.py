@@ -139,10 +139,12 @@ def process_text(html, clear=False):
     else:
         lemmatized_text, lem0, lem1 = get_lemmatized_text(doc)
 
-    entities = get_entities(doc)
+    entities_grouped = get_entities(doc)
+    entities_list = get_entities_list(doc)
     end = time.time()
     return {
-        'entities': entities,
+        'entities_grouped': entities_grouped,
+        'entities_list': entities_list,
         'cleared': clear,
         'lemm_num': lem0,
         'lemm_num_cleared': lem1,
