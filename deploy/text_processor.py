@@ -80,7 +80,7 @@ def lemmatize_doc(doc):
 def get_lemmatized_cleared_text(doc):
     "Возвращает лематизированный и очищенный от предлогов и других частиц текст"
     lm = [token.lemma for token in doc.tokens if token.lemma not in stop_words ]
-    print(f'Удалено {len(doc.tokens)-len(lm)} из {len(doc.tokens)} лем')
+    # print(f'Удалено {len(doc.tokens)-len(lm)} из {len(doc.tokens)} лем')
     return " ".join(lm), len(doc.tokens), len(lm)
 
 def get_lemmatized_text(doc):
