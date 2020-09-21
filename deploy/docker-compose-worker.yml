@@ -1,0 +1,12 @@
+version: "3"
+
+services: 
+    # worker для обработки текстов базы данных -----------------------------------------
+    text-processor-worker:
+        image: vadimivlev/text-processor-worker:latest
+        build: 
+            context: .
+            dockerfile: Dockerfile-worker
+        container_name: text-processor-worker
+        hostname: text-processor-worker
+        restart: unless-stopped

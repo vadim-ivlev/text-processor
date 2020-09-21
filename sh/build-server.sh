@@ -2,7 +2,7 @@
 
 
 
-echo "Rebuilding Text-processor image..."
+echo "Rebuilding Text-processor server image..."
 
 docker-compose -f deploy/docker-compose.yml build 
 
