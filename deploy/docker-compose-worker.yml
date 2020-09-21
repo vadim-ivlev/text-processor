@@ -10,3 +10,5 @@ services:
         container_name: text-processor-worker
         hostname: text-processor-worker
         restart: unless-stopped
+        # environment: 
+        #   - PYTHONUNBUFFERED=0
