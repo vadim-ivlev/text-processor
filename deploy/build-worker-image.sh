@@ -5,5 +5,5 @@ docker build -t vadimivlev/text-processor-worker:latest -f Dockerfile-worker .
 
 echo "push the docker image" 
 docker login
-docker push rgru/text-processor-worker:latest
+docker push vadimivlev/text-processor-worker:latest
 
