@@ -148,7 +148,7 @@ def main():
     while True:    
 
         # извлекаем порцию записей из бд
-        new_records, err, duration = repeat_until_success(get_records,1)
+        new_records, err, duration = repeat_until_success(get_records,50)
         print(f'-- Got       {len(new_records)} in {duration:.2f} seconds.')
         
         # если в базе данных нет записей для обработки ждем и начинаем сначала
