@@ -139,3 +139,43 @@ data='
 Максимум чего удалось добиться путём организации четырёх реплик и балансера нагрузки 
 в docker-compose, это снижение времени исполнения запроса с 0.28 до 0.18 секунды 
 на локальном компьютере с четырьмя процессорами.
+
+
+Запуск программы
+------------
+
+Go to deploy/ directory.
+
+**To start web app with API in docker:**
+      
+      docker-compose up
+
+open http://localhost:9555
+
+To start without docker
+
+      python server.py
+
+open http://localhost:5000
+
+**To begin processing articles**
+
+      docker-compose -f docker-compose-worker.yml up
+
+or 
+
+      python process_articles.py
+
+To build the image and upload it to docker hub :
+
+      ./build-worker-image.sh
+
+## Notes
+
+Sometimes process_articles.py crushes because of lack of memory. This happens when processed text is big.
+Then docker restarts the container and process_articles.py continues leaving several records in the database unprocessed with 
+process_status = 'processing'.
+
+
+
+

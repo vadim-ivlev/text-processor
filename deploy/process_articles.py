@@ -71,7 +71,7 @@ def process_records(records):
         rec['lemmatized_text'] = o['lemmatized_text']
         rec['entities_text'] = entities_text
         rec['entities_grouped'] = o['entities_grouped']
-        rec['process_status'] = 'success'
+        rec['process_status'] = o['process_status']
         if i%10==0:
             print(f'{i:>15}')
     duration = time.time() - start
@@ -142,13 +142,13 @@ def main():
     # print(res)
 
 
-    new_rec_timeout = 10 * 60
+    new_rec_timeout = 1 * 60
 
     # бесконечно повторяем одни и те же действия
-    for _ in range(10):    
+    while True:    
 
         # извлекаем порцию записей из бд
-        new_records, err, duration = repeat_until_success(get_records,50)
+        new_records, err, duration = repeat_until_success(get_records,1)
         print(f'-- Got       {len(new_records)} in {duration:.2f} seconds.')
         
         # если в базе данных нет записей для обработки ждем и начинаем сначала

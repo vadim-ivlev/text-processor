@@ -1,4 +1,4 @@
-
+import logging
 import socket
 from collections import defaultdict
 import json
@@ -132,15 +132,27 @@ def get_entities(doc):
 def process_text(html, clear=False):
     start = time.time()
     text = strip(html)
+    lemmatized_text = None
+    lem0 = None
+    lem1 = None
+    entities_grouped = None
+    entities_list = None
+    process_status = 'success'
+
+    # try:
     doc = get_doc(text)
     lemmatize_doc(doc)
     if clear:
         lemmatized_text, lem0, lem1 = get_lemmatized_cleared_text(doc)
     else:
         lemmatized_text, lem0, lem1 = get_lemmatized_text(doc)
-
     entities_grouped = get_entities(doc)
     entities_list = get_entities_list(doc)
+    # except Exception as ex:
+    #     process_status  = "ERROR: " + str(ex)
+    #     logging.warning(process_status)
+    #     print(process_status)
+
     end = time.time()
     return {
         'entities_grouped': entities_grouped,
@@ -151,17 +163,28 @@ def process_text(html, clear=False):
         'lemmatized_text': lemmatized_text,
         'time': int((end-start)*1000)/1000,
         'host': socket.gethostname(),
+        'process_status':'success1',
     }
 
 
 def process_entities(html):
     start = time.time()
     text = strip(html)
-    doc = get_doc(text)
-    entities = get_entities(doc)
+    entities = None
+    process_status = 'success'
+    try:
+        doc = get_doc(text)
+        entities = get_entities(doc)
+
+    except Exception as ex:
+        process_status  = "ERROR: " + str(ex)
+        logging.warning(process_status)
+        print(process_status)
+
     end = time.time()
     return {
         'entities': entities,
         'time': int((end-start)*1000)/1000,
         'host': socket.gethostname(),
+        'process_status': process_status
     }
