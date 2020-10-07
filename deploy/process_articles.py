@@ -5,8 +5,13 @@ import time
 
 import text_processor
 import simplejson as json
+import os
 
-DSN = "host=134.0.107.93 port=5432 dbname=rgdb user=root password=rosgas2011"
+
+
+# DSN = f"host={os.getenv('RGHOST')} port=5432 dbname=rgdb user=root password={os.getenv('RGPASS')}"
+
+DSN = os.getenv('RGDSN')
 
 def execute(DSN,sql, *args):
     records = None
