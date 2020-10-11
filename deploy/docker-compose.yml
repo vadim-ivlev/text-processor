@@ -10,35 +10,38 @@ services:
         container_name: text-processor-0
         hostname: text-processor-0
         restart: unless-stopped
+        environment: 
+            - RGPASS=${PGPASSWORD}
         # ports: 
         #     - 5000:5000
     
-    text-processor-1:
-        image: text-processor-prod
-        build: 
-            context: .
-            dockerfile: Dockerfile
-        container_name: text-processor-1
-        hostname: text-processor-1
-        restart: unless-stopped
+    # text-processor-1:
+    #     image: text-processor-prod
+    #     build: 
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     container_name: text-processor-1
+    #     hostname: text-processor-1
+    #     restart: unless-stopped
+
     
-    text-processor-2:
-        image: text-processor-prod
-        build: 
-            context: .
-            dockerfile: Dockerfile
-        container_name: text-processor-2
-        hostname: text-processor-2
-        restart: unless-stopped
+    # text-processor-2:
+    #     image: text-processor-prod
+    #     build: 
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     container_name: text-processor-2
+    #     hostname: text-processor-2
+    #     restart: unless-stopped
     
-    text-processor-3:
-        image: text-processor-prod
-        build: 
-            context: .
-            dockerfile: Dockerfile
-        container_name: text-processor-3
-        hostname: text-processor-3
-        restart: unless-stopped
+    # text-processor-3:
+    #     image: text-processor-prod
+    #     build: 
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     container_name: text-processor-3
+    #     hostname: text-processor-3
+    #     restart: unless-stopped
     
     # Балансер нагрузки. -------------------------------------------------------------------------------
     # Параметры проксирования определены в Caddyfile

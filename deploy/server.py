@@ -1,6 +1,7 @@
 from flask import Flask, request, url_for
 import simplejson as json
 import text_processor
+import elastic
 app = Flask(__name__)
 
 def get_text():
@@ -40,6 +41,22 @@ def entities():
     text = get_text()
     o = text_processor.process_entities(text)
     return make_response(o)
+
+@app.route('/search', methods=['POST'])
+def search():
+    text = get_text()
+    field = request.args.get('field','lemmatized_text')
+    skip = request.args.get('skip', 0)
+    limit = request.args.get('limit',50)
+    timeout = request.args.get('timeout','5s')
+    lemmatize = request.args.get('lemmatize',True)
+
+    if lemmatize:
+        o = text_processor.process_text(text, clear=True)
+        text = o.get('lemmatized_text','')
+
+    search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout)
+    return make_response(search_result)
 
 
 # https://medium.com/@dkhd/handling-multiple-requests-on-flask-60208eacc154

@@ -5,6 +5,9 @@ import json
 import re
 from bs4 import BeautifulSoup
 import time
+import requests
+from pprint import pprint
+import os
 
 def strip(html):
     h = re.sub(r'<','\n<',html)
@@ -163,7 +166,7 @@ def process_text(html, clear=False):
         'lemmatized_text': lemmatized_text,
         'time': int((end-start)*1000)/1000,
         'host': socket.gethostname(),
-        'process_status':'success1',
+        'process_status':process_status,
     }
 
 
@@ -188,3 +191,4 @@ def process_entities(html):
         'host': socket.gethostname(),
         'process_status': process_status
     }
+
