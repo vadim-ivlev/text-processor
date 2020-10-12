@@ -18,6 +18,7 @@ def search(text:str, skip=0, limit=50, field="lemmatized_text", timeout='5s')->o
         "from": skip,
         "size": limit,
         "timeout": timeout,
+        # "track_total_hits": 100,
         "_source": [ "obj_id", "date_modified","title","announce","uannounce", "link_title", "url" ],
         "query": {
             "match": {
