@@ -27,7 +27,7 @@ API
     full_text, title, announce, link_title, uannounce, lemmatized_text, entities
   - timeout=5s - максимальное время выполнения поиска
   - lemmatize=true - если false, не лемматизировать и не очищать запрос от стоп слов.
-    <br>
+    <br><br>
 
 - /lemmas-entities - возвращает лемматизированный текст и список сущностей 
 - /clear-lemmas-entities - возвращает лемматизированный, очищенный от стоп-слов текст и список сущностей
