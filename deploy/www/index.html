@@ -38,7 +38,7 @@
     </head>
     <body>
         <h1>Близкие по теме материалы RG</h1>
-        <h4>Алгоритм Okapi BM25</h4>
+        <!-- <h4>Алгоритм Okapi BM25</h4> -->
         <p>
             Вставьте текст. Нажмите кнопку.
             Чтобы искать по участку текста, выделите его.
@@ -51,15 +51,25 @@
 Новый постоянный научный объект Южной Кореи, названный "Чанбого", находится в юго-восточной части Антарктиды. Эта база будет состоять из 10 зданий, рассчитанных на постоянное пребывание 60 человек. Строительные работы планируют завершить к марту 2014 года. Весь комплекс обойдется примерно в 90 миллионов долларов.
 
 В символической церемонии закладки первого камня в фундамент здания приняла участие специальная южнокорейская правительственная делегация во главе с заместителем министра земельных ресурсов, транспорта и морских дел Чу Сон Хо.            
-                    </textarea>
-        <br><br>
+        </textarea>
+        <span>Между </span>
+        <input type="date" id="from_date" value="2003-01-01" onchange="getLinks()">
+        <span>и </span>
+        <input type="date" id="to_date" value="2025-01-01" onchange="getLinks()">
+        <span> максимум </span>
+        <input id='limit' type="number" value="20" min="0" max="500" style="width:50px;" onchange="delayGetLinks()">
         
-        <button id="search-button" class="main" onclick="getLinks('/process/search')">Искать</button>
+        <br><br><br>
+        
+        <button id="search-button" class="main" onclick="getLinks()">Искать</button>
         <span class="also">CTRL-Enter</span>
+        
         <button onclick="showJSON('/process/lemmas-entities')">lemmas-entities</button>
         <button onclick="showJSON('/process/clear-lemmas-entities')">clear-lemmas-entities</button>
         <button onclick="showJSON('/process/entities')">entities</button>
         <a target="_blank" href="https://git.rgwork.ru/masterback/text-processor">Документация</a>
+        
+ 
         <pre id='res'></pre>
         <div id='links'></div>
         <p></p>
@@ -85,18 +95,30 @@
                 document.getElementById('res').innerText = JSON.stringify(requestResult,null,2)       
             }
     
-            async function getLinks(url) {
+            async function getLinks(params='') {
                 
+                url = '/process/search'
+                limit = document.getElementById('limit').value
+                fromDate = document.getElementById('from_date').value
+                toDate = document.getElementById('to_date').value
+                urlParams = `?limit=${limit}&from_date=${fromDate}&to_date=${toDate}${params}`
+
                 let searchText = document.getSelection().toString()
                 if (searchText == '') 
                     searchText = document.getElementById('txt').value
                 
                 document.getElementById('res').innerText = ''
                 document.getElementById('links').innerHTML = 'Идет поиск ...'
-                r = await doRequest(url,{text: searchText})
+                r = await doRequest(url+urlParams,{text: searchText})
                 document.getElementById('links').innerHTML = getInfo(r) + getLinksHTML(r)   
                 document.getElementById('txt').focus()
                 changeSearchButton()
+            }
+
+            var getLinksTimeout
+            function delayGetLinks(params) {
+                clearTimeout(getLinksTimeout)
+                getLinksTimeout = setTimeout(getLinks,500)
             }
 
             // Builds html links from the object returned by Elastic.
@@ -151,19 +173,24 @@
             function onKeyDown(e) {
                 if (e.ctrlKey && e.code=="Enter")
                     if (e.shiftKey) {
-                        getLinks('/process/search?field=full_text&limit=50')
+                        getLinks('&field=full_text&lemmatize=false')
                     }
                     else {
-                        getLinks('/process/search?limit=50')
+                        getLinks()
                     }
             }
 
+            function today(dateTime) {
+                var d = new Date();
+                return `${d.getFullYear()}-${d.getMonth().toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`
+            }
+
+          
+
             document.addEventListener('selectionchange', changeSearchButton)  
-
             document.addEventListener('keydown', onKeyDown)
-
-
-            getLinks('/process/search')
+            document.getElementById('to_date').value = today()
+            getLinks()
         </script>    
             
     </body>

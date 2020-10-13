@@ -2,6 +2,7 @@ from flask import Flask, request, url_for
 import simplejson as json
 import text_processor
 import elastic
+import logging
 app = Flask(__name__)
 
 def get_text():
@@ -47,15 +48,19 @@ def search():
     text = get_text()
     field = request.args.get('field','lemmatized_text')
     skip = request.args.get('skip', 0)
-    limit = request.args.get('limit',50)
+    limit = request.args.get('limit',20)
     timeout = request.args.get('timeout','5s')
     lemmatize = request.args.get('lemmatize',True)
+    from_date = request.args.get('from_date','2000-01-01')
+    to_date = request.args.get('to_date','2030-01-01')
 
-    if lemmatize:
+    if lemmatize!="false":
         o = text_processor.process_text(text, clear=True)
         text = o.get('lemmatized_text','')
+    else:
+        logging.warning('NOT lemmatized !!!!')
 
-    search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout)
+    search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout, from_date=from_date, to_date=to_date)
     return make_response(search_result)
 
 

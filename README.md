@@ -190,4 +190,5 @@ process_status = 'processing'.
 
 
 
-
+curl -XPOST "http://13.79.79.34:9094/elasticsearch/_sql?format=txt" -H 'Content-Type: application/json' -d'{  "query": "SELECT obj_id FROM articles where process_status = '\''success'\'' limit 10000"}'
+ 
