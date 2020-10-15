@@ -1,3 +1,4 @@
+from markupsafe import escape
 from flask import Flask, request, url_for
 import simplejson as json
 import text_processor
@@ -62,6 +63,25 @@ def search():
 
     search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout, from_date=from_date, to_date=to_date)
     return make_response(search_result)
+
+@app.route('/syntax', methods=['POST'])
+def syntax():
+    text = get_text()
+    tree = text_processor.get_syntax_tree(text)
+    return tree
+
+@app.route('/list-lemma-vec', methods=['POST'])
+def list_lemma_vec():
+    text = get_text()
+    r = text_processor.list_lemma_vec(text)
+    return make_response(r)
+
+@app.route('/extract/<what>', methods=['POST'])
+def extract(what:str):
+    text = get_text()
+    r = text_processor.extract(text, escape(what))    
+    return make_response(r)
+
 
 
 # https://medium.com/@dkhd/handling-multiple-requests-on-flask-60208eacc154

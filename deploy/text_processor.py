@@ -11,7 +11,7 @@ import os
 
 def strip(html):
     h = re.sub(r'<','\n<',html)
-    return BeautifulSoup(h,features="html.parser").get_text()   
+    return BeautifulSoup(h,features="html.parser").get_text().rstrip(" ").rstrip(".") + "."  
 
 stop_words = { 'и', 'в', 'не', 'на', 'я', 'с', 'он', 'что', 'а', 'это', 'этот', 'по', 'к', 'но', 
 'они', 'мы', 'она', 'как', 'то', 'который', 'из', 'у', 'свой', 'вы', 'весь', 'за', 'для', 'от', 'так', 
@@ -58,10 +58,10 @@ morph_tagger = NewsMorphTagger(emb)
 syntax_parser = NewsSyntaxParser(emb)
 ner_tagger = NewsNERTagger(emb)
 
-# names_extractor = NamesExtractor(morph_vocab)
-# dates_extractor = DatesExtractor(morph_vocab)
-# money_extractor = MoneyExtractor(morph_vocab)
-# addr_extractor = AddrExtractor(morph_vocab)
+names_extractor = NamesExtractor(morph_vocab)
+dates_extractor = DatesExtractor(morph_vocab)
+money_extractor = MoneyExtractor(morph_vocab)
+addr_extractor = AddrExtractor(morph_vocab)
 # ------------------------------------------------------------------------------------------
 def get_doc(text):
     "Порождает предобработанный документ из данного текта"
@@ -192,3 +192,94 @@ def process_entities(html):
         'process_status': process_status
     }
 
+import io
+from contextlib import redirect_stdout
+
+
+def get_syntax_tree(html):
+    """
+    Печатает дерево синтаксического разбора
+    """
+    text = strip(html)
+    doc = get_doc(text)
+    output = ''
+    with io.StringIO() as buf, redirect_stdout(buf):
+        try:
+            for sent in doc.sents:
+                print('\n\n'+sent.text)
+                print('-------------------------------------------------')
+                sent.morph.print()
+                sent.syntax.print()
+                output = buf.getvalue()
+        except:
+            print("Sorry. Ошибка синтаксического анализа.")
+
+    return output   
+        
+def list_lemma_vec(html:str) -> list:
+    """
+    возвращает вектора слов word2vec
+    """
+    text = strip(html)
+    doc = get_doc(text)
+    lemmatize_doc(doc)
+    d =[]
+    counter =0
+    for t in doc.tokens:
+        w = t.lemma
+        if w is not None:
+            l = emb.get(w)
+            l = [] if l is None else l.tolist()
+            d.append( (w, l) )
+        counter += 1
+        if counter > 3 : break
+    return d
+
+def fact(matches)->list:
+    l=[]
+    for m in matches:
+        f = m.fact
+        d ={}
+        for property, value in vars(f).items():
+            if value is not None:
+                d[property]=value
+        if len(d)>0:
+            l.append(d)
+    return l
+
+def extract(html:str, what:str) -> list:
+    """
+    возвращает факты
+    """
+    text = strip(html)
+    doc = get_doc(text)
+    l = []
+    for sent in doc.sents:
+        if what == 'dates':
+            o = fact(dates_extractor(sent.text))
+            if len(o) > 0: l.extend(o)
+        elif what == 'names':
+            o = fact(names_extractor(sent.text))
+            if len(o) > 0: l.extend(o)
+        elif what == 'addr':
+            o = fact(addr_extractor(sent.text))
+            if len(o) > 0: l.extend(o)
+        elif what == 'money':
+            o = fact(money_extractor(sent.text))
+            if len(o) > 0: l.extend(o)
+        else:
+            o =[]
+
+    return l
+
+if __name__ == '__main__':
+    print("Testing text_processor")
+    # s=get_syntax_tree("Чайник закипел")
+    s=extract("1964 год, Рязань, 100 долларов.", 'dates')
+    print(s)
+    s=extract("1964 год, Рязань, 100 долларов.", 'money')
+    print(s)
+    s=extract("1964 год, Рязань, 100 долларов.", 'addr')
+    print(s)
+    s=extract("1964 год, Рязань, 100 долларов.", 'names')
+    print(s)

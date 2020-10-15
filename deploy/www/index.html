@@ -12,10 +12,14 @@
             #txt {
                 width: 100%;
                 height: 300px;
+                border: 2px solid black;
             }
             #res {
                 width:100%;
                 white-space: pre-wrap;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 80%;
+                font-weight: bold;
             }
             #links {
                 padding-top: 20px;
@@ -44,7 +48,7 @@
             Чтобы искать по участку текста, выделите его.
         </p>
         <textarea id="txt">
-Южная Корея построит в Антарктиде постоянную научную станцию
+Южная Корея построит в Антарктиде постоянную научную станцию.
 
 Южная Корея начала строительные работы по возведению в Антарктиде своей второй по счету научной станции. Первая, отметим, называется "Король Сечжон". Она была открыта еще в 1987 году.
 
@@ -65,8 +69,14 @@
         <span class="also">CTRL-Enter</span>
         
         <button onclick="showJSON('/process/lemmas-entities')">lemmas-entities</button>
-        <button onclick="showJSON('/process/clear-lemmas-entities')">clear-lemmas-entities</button>
-        <button onclick="showJSON('/process/entities')">entities</button>
+        <!-- <button onclick="showJSON('/process/clear-lemmas-entities')">clear-lemmas-entities</button> -->
+        <!-- <button onclick="showJSON('/process/entities')">entities</button> -->
+        <button onclick="showText('/process/syntax')">syntax</button>
+        <button onclick="showJSON('/process/list-lemma-vec')">3 word2vec</button>
+        <button onclick="showJSON('/process/extract/money')">money</button>
+        <button onclick="showJSON('/process/extract/dates')">dates</button>
+        <!-- <button onclick="showJSON('/process/extract/names')">names</button> -->
+        <button onclick="showJSON('/process/extract/addr')">addr</button>
         <a target="_blank" href="https://git.rgwork.ru/masterback/text-processor">Документация</a>
         
  
@@ -83,7 +93,12 @@
                         redirect: 'follow', 
                         body: JSON.stringify(data) 
                     })
-                    return await r.json()
+                    contentType = r.headers.get('Content-Type','')
+                    if (contentType.includes('json')){
+                        return await r.json()
+                    } else {
+                        return r.text()
+                    }
                 } catch (error) {
                     return error 
                 }
@@ -93,6 +108,11 @@
                 document.getElementById('links').innerText = ''
                 requestResult = await doRequest(url,{text: document.getElementById('txt').value})
                 document.getElementById('res').innerText = JSON.stringify(requestResult,null,2)       
+            }
+            async function showText(url) {
+                document.getElementById('links').innerText = ''
+                requestResult = await doRequest(url,{text: document.getElementById('txt').value})
+                document.getElementById('res').innerText = requestResult     
             }
     
             async function getLinks(params='') {
