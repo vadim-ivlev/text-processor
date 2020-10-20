@@ -12,5 +12,13 @@ services:
             - 9999:8888
         volumes: 
             - .:/home/jovyan/work
-            - /Volumes/ssd/rg-db:/sqlite-data
+            # - /Volumes/ssd/rg-db:/sqlite-data
         command: /opt/conda/bin/jupyter notebook  --ip='*' --port=8888 --no-browser --allow-root --notebook-dir=/home/jovyan/work --NotebookApp.token=''
+
+# outer network to communicate with other services ----------------------------------------------------
+networks:
+    default:
+        external:
+            name: auth_proxy_network
+    
+    
