@@ -1,6 +1,10 @@
 # text-processor
 
-<https://text-processor.rg.ru>
+<http://dockertest.rgwork.ru:9555>
+
+<img style="width:150px;" src="https://drive.google.com/file/d/1yflDpag5TSUrKPRsHgFzR2sBhjBY_7tz/view">
+
+<a target="_blank" href="https://viewer.diagrams.net/?highlight=0000ff&edit=_blank&layers=1&nav=1&title=RG%20NLP%20project.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1yflDpag5TSUrKPRsHgFzR2sBhjBY_7tz%26export%3Ddownload">Диаграмма</a>
 
 Сервер для морфологического и синтаксического анализа текстов, лемматизации, 
 нормализации выражений, выделения именованных сущностей.
@@ -100,28 +104,21 @@ Content-Type: application/json
 Выполняются из корневой директории.
 
 
-Билд сервера
-
-      docker-compose -f deploy/docker-compose.yml build  
-
 Старт сервера
 
-      docker-compose -f deploy/docker-compose.yml up -d  
+      sh/server-up.sh  
 
 Останов сервера
    
-      docker-compose -f deploy/docker-compose.yml down  
+      sh/server-down.sh   
 
 Старт записных книжек
 
-      docker-compose up -d
+      sh/notebooks-up.sh  
 
 Останов записных книжек
 
-      docker-compose down
-
-или с помощью скриптов в директории sh/ .
-
+      sh/notebooks-down.sh
 
 
 Тест библиотек
@@ -156,23 +153,24 @@ Content-Type: application/json
 Запуск программы
 ------------
 
-Go to deploy/ directory.
+Перейдите в директорию deploy/.
 
-**To start web app with API in docker:**
+**Веб приложение в докере:**
       
-      docker-compose up
+      docker-compose up -d --build
 
-open http://localhost:9555
 
-To start without docker
+**Веб приложение без докера:**
 
       python server.py
 
-open http://localhost:5000
+Откройте http://localhost:9555
 
-**To begin processing articles**
 
-      docker-compose -f docker-compose-worker.yml up
+**Запуск процессора новых статей**
+
+      ./build-push.sh
+      docker run -rm -it -e ...  vadimivlev/text-processor:latest ?????
 
 or 
 

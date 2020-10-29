@@ -4,11 +4,11 @@
 
 echo "Стартуем Jupyter notebooks..."
 
-docker-compose up -d
+docker-compose up -d --build
 
 # Если предыдущая команда выполнилась удачно печатаем приглашение.
 if [ $? -eq 0 ]; then
     sh/greetings.sh
 else
-    echo "НЕ удалость стартовать Jupyter notebooks."
+    echo "НЕ удалость стартовать Jupyter notebooks..."
 fi

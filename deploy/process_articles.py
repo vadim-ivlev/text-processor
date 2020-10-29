@@ -9,8 +9,6 @@ import os
 
 
 
-# DSN = f"host={os.getenv('RGHOST')} port=5432 dbname=rgdb user=root password={os.getenv('RGPASS')}"
-
 DSN = os.getenv('RGDSN')
 
 def execute(DSN,sql, *args):
@@ -61,7 +59,7 @@ def get_records(num_records=30):
 
 def process_records(records):
     """
-    Adds results of NLP processing to records
+    Adds results of NLP to records
     """
     start = time.time()
     # print(f'Executing process_records(records), Record number = {len(records)}')
@@ -167,8 +165,8 @@ def main():
         print(f'-- Processed {len(processed_records)} in {duration:.2f} seconds.    Rate {len(processed_records)/duration:.2f} records/sec.')
         
         # сохраняем порцию в базу данных 
-        saved_records, err, duration = repeat_until_success(update_records, processed_records)
-        print(f'-- Saved     {len(processed_records)} in {duration:.2f} seconds.')
+        # saved_records, err, duration = repeat_until_success(update_records, processed_records)
+        # print(f'-- Saved     {len(processed_records)} in {duration:.2f} seconds.')
 
 
 

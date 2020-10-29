@@ -19,11 +19,7 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
 
     username = 'admin'
     password = os.getenv('RGPASS')
-    # print('password=',password)
-    # elastic_endpoint = 'http://13.79.79.34:9094/elasticsearch/'
-    # elastic_endpoint = 'http://dockertest.rgwork.ru:9094/elasticsearch/'
-    # elastic_endpoint = 'http://rg-corpus-caddy:8080/elasticsearch/'
-    elastic_endpoint = 'http://es01:9200/'
+    elastic_endpoint = os.getenv('ELASTIC_ENDPOINT')
 
 # _sql/translate
 # {

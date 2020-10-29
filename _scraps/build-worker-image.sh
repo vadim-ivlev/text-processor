@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "build a docker image"
-docker build -t vadimivlev/text-processor-worker:latest -f Dockerfile-worker . 
+docker build -t vadimivlev/text-processor:latest -f Dockerfile . 
 
 echo "push the docker image" 
 docker login

@@ -3,6 +3,7 @@ image: golang:1.14.2
 variables:
     IMAGE_NAME: text-processor-prod
     BUILD_PATH: /builds/masterback/text-processor
+    TARGET_SERVER: gitupdater@dockertest.rgwork.ru
 
 stages:
     - deploy&copy
@@ -20,12 +21,9 @@ deploy&copy:
         # - ./sh/build-deploy-directory.sh  
         - ./.import-ssh-key.sh "$PROD_RSA_PRIVATE_KEY"
         # удаляем старую директорию на боевом сервере
-        - ssh gitupdater@dockerweb.rgwork.ru 'rm -rf /home/gitupdater/'$IMAGE_NAME
+        - ssh $TARGET_SERVER 'rm -rf /home/gitupdater/'$IMAGE_NAME
         # копируем новую директорию deploy/ на боевой сервер
-        - scp -pr $BUILD_PATH/deploy gitupdater@dockerweb.rgwork.ru:/home/gitupdater/$IMAGE_NAME
-        # - rsync -av $BUILD_PATH/deploy gitupdater@dockerweb.rgwork.ru:/home/gitupdater/$IMAGE_NAME
-        # change rights to filebeat (permition denied)
-        # - ssh gitupdater@dockerweb.rgwork.ru 'chown root /home/gitupdater/'$IMAGE_NAME/configs/filebeat.yml
+        - scp -pr $BUILD_PATH/deploy $TARGET_SERVER:/home/gitupdater/$IMAGE_NAME
 
     only:
         - production
@@ -38,7 +36,7 @@ deploy&compose:
     script:
         - ./.import-ssh-key.sh "$DEPLOY_RSA_PRIVATE_KEY"
         # !!! start real deploy and docker-compose
-        - ssh gitupdater@dockerweb.rgwork.ru $IMAGE_NAME
+        - ssh $TARGET_SERVER $IMAGE_NAME
     only:
         - production
 
