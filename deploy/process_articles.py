@@ -17,9 +17,9 @@ DSN = os.getenv('RGDSN')
 RGUSER = 'admin'
 RGPASS = os.getenv('RGPASS')
 # elastic endpoint
-# ELASTIC_ENDPOINT = "http://rg-corpus-caddy:8080/elasticsearch/"
-ELASTIC_ENDPOINT = "http://dockertest.rgwork.ru:9094/elasticsearch/"
-ELASTIC_INDEX = 'articles_test'
+ELASTIC_ENDPOINT = "http://rg-corpus-caddy:8080/elasticsearch/"
+# ELASTIC_ENDPOINT = "http://dockertest.rgwork.ru:9094/elasticsearch/"
+ELASTIC_INDEX = 'articles'
 print(f'RGPASS={RGPASS} DSN={DSN}')
 
 
