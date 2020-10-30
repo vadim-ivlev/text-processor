@@ -149,7 +149,7 @@ def update_records(records):
     try:
         # prepare data
         data = [(r['obj_id'], 
-                r['process_status']+'000', 
+                r['process_status'], 
                 r['lemmatized_text'], 
                 r['entities_text'], 
                 json.dumps(r['entities_grouped'],indent=2, ensure_ascii=False),
