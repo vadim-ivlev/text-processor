@@ -6,10 +6,22 @@ import time
 import text_processor
 import simplejson as json
 import os
+import requests
+from pprint import pprint
 
 
-
+# строка подсоединения к Постгресу
 DSN = os.getenv('RGDSN')
+
+# пользователь и пароль к эластику
+RGUSER = 'admin'
+RGPASS = os.getenv('RGPASS')
+# elastic endpoint
+# ELASTIC_ENDPOINT = "http://rg-corpus-caddy:8080/elasticsearch/"
+ELASTIC_ENDPOINT = "http://dockertest.rgwork.ru:9094/elasticsearch/"
+ELASTIC_INDEX = 'articles_test'
+print(f'RGPASS={RGPASS} DSN={DSN}')
+
 
 def execute(DSN,sql, *args):
     records = None
@@ -51,7 +63,7 @@ def get_records(num_records=30):
     sql = f"""
     UPDATE articles 
     SET process_status='processing' 
-    WHERE obj_id IN ( SELECT obj_id FROM articles WHERE process_status IS NULL LIMIT {num_records})
+    WHERE obj_id IN ( SELECT obj_id FROM articles WHERE process_status IS NULL AND migration_status='success' LIMIT {num_records})
     RETURNING *
     """ 
     res = execute(DSN,sql)
@@ -73,14 +85,62 @@ def process_records(records):
 
         rec['lemmatized_text'] = o['lemmatized_text']
         rec['entities_text'] = entities_text
-        rec['entities_grouped'] = o['entities_grouped']
+        rec['entities_grouped'] = json.dumps(o['entities_grouped'], ensure_ascii=False)
         rec['process_status'] = o['process_status']
         if i%10==0:
             print(f'{i:>15}')
     duration = time.time() - start
     return records, None, duration
 
+def save_bulk_to_elastic(lines: list, elastic_endpoint:str, index_name:str, username='', password='') -> bool:
+    """Формирует текст из линий и сохраняет его в Elastic _bulk API"""
+
+    res = True
+    data = '\n'.join(lines)+'\n'
+    try:
+        r = requests.post(f'{elastic_endpoint}{index_name}/_bulk', 
+                            headers = {'Content-Type': 'application/x-ndjson; charset=UTF-8'}, 
+                            auth=(username,password),
+                            data=data.encode('utf-8'))
+        rjson=r.json()
+        if rjson.get('errors') is not False:
+            pprint(rjson)
+            res = False
+    except:
+        pprint(r)
+        res = False
+    return res
+
+
+def save_records_to_elastic(records):
+    """
+    Сохраняет порцию записей в Эластик
+    """
+    start = time.time()
+    # подготавливаем записи для балка
+    lines = []
+    for record in records:
+        elastic_id = record['obj_id']
+        lines.append('{"index" : {"_id" : "'+str(elastic_id)+'"}}')
+        lines.append(json.dumps(record, ensure_ascii=False))
+    
+    saved = save_bulk_to_elastic(lines, ELASTIC_ENDPOINT, ELASTIC_INDEX , RGUSER, RGPASS )
+    if saved :
+        for record in records:
+            record['elastic_status'] = "indexed"
+    
+    duration = time.time() - start
+    print(f'-- Indexed in Elastic   {len(records)} in {duration:.2f} seconds.')
+    return records
+
+
+
+
+
 def update_records(records):
+    """
+    Сохраняет порцию записей в Postgres
+    """
     start = time.time()
     err = None
     # print(f'Executing update_records(records), Record number = {len(records)}')
@@ -89,10 +149,11 @@ def update_records(records):
     try:
         # prepare data
         data = [(r['obj_id'], 
-                r['process_status'], 
+                r['process_status']+'000', 
                 r['lemmatized_text'], 
                 r['entities_text'], 
-                json.dumps(r['entities_grouped'],indent=2, ensure_ascii=False)
+                json.dumps(r['entities_grouped'],indent=2, ensure_ascii=False),
+                r['elastic_status']
                 ) for r in records]
 
         con = psycopg2.connect( DSN )
@@ -103,9 +164,10 @@ def update_records(records):
             process_status = data.process_status,
             lemmatized_text = data.lemmatized_text,
             entities_text = data.entities_text,
-            entities_grouped = data.entities_grouped
+            entities_grouped = data.entities_grouped,
+            elastic_status = data.elastic_status
 
-            FROM (VALUES %s) AS data (obj_id, process_status, lemmatized_text, entities_text, entities_grouped)
+            FROM (VALUES %s) AS data (obj_id, process_status, lemmatized_text, entities_text, entities_grouped, elastic_status)
             WHERE articles.obj_id = data.obj_id
             
             """, data)
@@ -139,7 +201,6 @@ def repeat_until_success(func, *args, wait=60):
     return result, err, duration
 
 
-
 def main():
     # res = execute(DSN,'SELECT obj_id,"full-text" FROM articles LIMIT 20' )
     # print(res)
@@ -147,7 +208,7 @@ def main():
 
     new_rec_timeout = 1 * 60
 
-    # бесконечно повторяем одни и те же действия
+    # Выполнять до тепловой смерти вселенной
     while True:    
 
         # извлекаем порцию записей из бд
@@ -164,10 +225,13 @@ def main():
         processed_records, err, duration = repeat_until_success(process_records, new_records, wait=3)
         print(f'-- Processed {len(processed_records)} in {duration:.2f} seconds.    Rate {len(processed_records)/duration:.2f} records/sec.')
         
-        # сохраняем порцию в базу данных 
-        # saved_records, err, duration = repeat_until_success(update_records, processed_records)
-        # print(f'-- Saved     {len(processed_records)} in {duration:.2f} seconds.')
+        # сохраняем порцию в эластик 
+        processed_records = save_records_to_elastic(processed_records)
 
+        # сохраняем порцию в базу данных 
+        saved_records, err, duration = repeat_until_success(update_records, processed_records)
+        print(f'-- Saved     {len(processed_records)} in {duration:.2f} seconds.')
+        print('---')
 
 
 if __name__ == '__main__':

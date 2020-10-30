@@ -82,7 +82,8 @@ services:
         hostname: text-processor-worker
         restart: unless-stopped
         environment: 
-            - RGDSN=${RGDSN1}
+            - RGDSN=${RGDSN}
+            - RGPASS=${RGPASS}
         command: [ "python", "-u", "./process_articles.py" ]
         
 # outer network to communicate with other services ----------------------------------------------------
