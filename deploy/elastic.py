@@ -13,6 +13,11 @@ def strip(html):
 
 def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', from_date='2000-01-01', to_date='2030-01-01')->object:
 
+    if from_date == '':
+        from_date = '2000-01-01'
+    if to_date == '':
+        to_date = '2030-01-01'
+
     loc = locals()
     for arg in inspect.getfullargspec(search).args: print(f'{arg:20}:', loc[arg])
     # pprint([(f'{arg:20}:', loc[arg]) for arg in inspect.getfullargspec(search).args ])
