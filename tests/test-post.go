@@ -10,8 +10,10 @@ import (
 )
 
 // Конечная точка API
+var apiUrl = "http://dockertest.rgwork.ru:9555/process/lemmas-entities"
+
+// var apiUrl = "http://localhost:9555/process/lemmas-entities"
 // var apiUrl = "http://192.168.1.164:9555/process/lemmas-entities"
-var apiUrl = "http://localhost:9555/process/lemmas-entities"
 // var apiUrl = "https://text-processor.rg.ru/process/lemmas-entities"
 
 // пример текста
