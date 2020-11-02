@@ -1,16 +1,17 @@
 # text-processor
 
-<http://dockertest.rgwork.ru:9555>
+**API первичного анализа текстовых данных** в рамках построения рекомендательной системы RGRU.
 
-<img style="width:150px;" src="https://drive.google.com/file/d/1yflDpag5TSUrKPRsHgFzR2sBhjBY_7tz/view">
+Первичный анализ включает , лемматизацию слов, 
+нормализацию выражений, морфологический анализ слов,
+синтаксический анализ предложений, очистку текста от стоп слов 
+HTML разметки, выделение именованных сущностей, дат, адресов, денежных сумм.
 
-<a target="_blank" href="https://viewer.diagrams.net/?highlight=0000ff&edit=_blank&layers=1&nav=1&title=RG%20NLP%20project.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1yflDpag5TSUrKPRsHgFzR2sBhjBY_7tz%26export%3Ddownload">Диаграмма</a>
+<a href="http://dockertest.rgwork.ru:9555">GUI доступа к API</a>
 
-Сервер для морфологического и синтаксического анализа текстов, лемматизации, 
-нормализации выражений, выделения именованных сущностей.
+<a target="_blank" href="https://viewer.diagrams.net/?highlight=0000ff&edit=_blank&layers=1&nav=1&title=RG%20NLP%20project.drawio#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1yflDpag5TSUrKPRsHgFzR2sBhjBY_7tz%26export%3Ddownload">Общая схема проектов</a>
 
 
-Часть проекта по построению рекомендательной системы RG.
 
 
 
@@ -28,22 +29,27 @@ API
   
   Может содержать следующие параметры, показанные со значениями по умолчанию:
 
-  - limit=50 - максимальное количество материалов в ответе
+  - limit=20 - максимальное количество материалов в ответе
   - skip=0 - пропустить количество записей
   - field=lemmatized_text - поле по которому осуществляется поиск. Может быть 
     full_text, title, announce, link_title, uannounce, lemmatized_text, entities
   - timeout=5s - максимальное время выполнения поиска
   - lemmatize=true - если false, не лемматизировать и не очищать запрос от стоп слов.
-    <br><br>
+  - from_date='2000-01-01' искать документы позже даты
+  - to_date='2030-01-01' искать документы до (не включая) даты.
+      <br><br>
 
-- /lemmas-entities - возвращает лемматизированный текст и список сущностей 
-- /clear-lemmas-entities - возвращает лемматизированный, очищенный от стоп-слов текст и список сущностей
-- /entities - возвращает список сущностей
+  - /lemmas-entities - возвращает лемматизированный текст и список сущностей 
+  - /clear-lemmas-entities - возвращает лемматизированный, очищенный от стоп-слов текст и список сущностей
+  - /entities - возвращает список сущностей
+  - /syntax - текст дерева синтаксического разбора
+  - list-lemma-vec - список word2vec векторов слов
+  - /extract/<what> выделение имен, дат, адресов, сумм
 
 Примеры использования API в файле `deploy/www/index.html`.
 
 **Запросы:**
-Запросы к любой конечной точке имеют одну и ту же форму.
+Запросы ко всем конечным точкам имеют форму:
 ```
 POST
 Content-Type: application/json
@@ -56,7 +62,7 @@ Content-Type: application/json
 
 Текст может содержать HTML разметку, которая будет удалена перед выполнением операций.
 
-**Ответ:**
+**Пример ответа:**
 
 ```json
 {
