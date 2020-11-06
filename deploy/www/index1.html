@@ -4,7 +4,20 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Поиск материалов RG</title>
+
         <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+        
+        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"> -->
+        <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+
+        <!-- CSS Reset -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+        <!-- Milligram CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+
         <style>
             body {
                 padding:10px;
@@ -39,6 +52,17 @@
                 border-radius: 3px;
                 padding: 1px 30px;
             }
+
+            input[type="date"] {
+                width: 180px;
+            }
+            h1 {
+                font-weight: bold;
+            }
+            #search-button {
+                background-color: rgb(58, 58, 58);
+                color: white;
+            }
         </style>
         
     </head>
@@ -58,13 +82,22 @@
 
 В символической церемонии закладки первого камня в фундамент здания приняла участие специальная южнокорейская правительственная делегация во главе с заместителем министра земельных ресурсов, транспорта и морских дел Чу Сон Хо.            
         </textarea>
-        <span>С </span>
-        <input type="date" id="from_date" value="2003-01-01" onchange="getLinks()">
-        <span>вплоть до (не включая)</span>
-        <input type="date" id="to_date" value="2025-04-01" onchange="getLinks()">
-        <span> максимум </span>
-        <input id='limit' type="number" value="20" min="0" max="500" style="width:100px;" onchange="delayGetLinks()">
-        <span>материалов.</span>
+        <div id="less-controls">
+            <span>Искать статьи не старше</span>
+            <input id='months' type="number" value="2" min="1" max="500" style="width:100px;" onchange="delayGetLinks()">
+            <span>месяцев</span>
+            <button class="button button-clear" onclick="hide('less-controls'); show('more-controls')">больше ▶</button>
+        </div>
+        <div id="more-controls" style="display: none;">
+            <span>С </span>
+            <input type="date" id="from_date" value="2003-01-01"  onchange="getLinks()">
+            <span>вплоть до (не включая)</span>
+            <input type="date" id="to_date" value="2025-04-01"  onchange="getLinks()">
+            <span> максимум </span>
+            <input id='limit' type="number" value="20" min="0" max="500" style="width:100px;" onchange="delayGetLinks()">
+            <span>материалов.</span>
+            <button class="button button-clear" onclick="hide('more-controls'); show('less-controls')">◀ меньше</button>
+        </div>
         <br><br><br>
         
         <button id="search-button" class="main" onclick="getLinks()">Искать</button>
@@ -118,6 +151,15 @@
             }
     
             async function getLinks(params='') {
+                // Если выбор количества месяцев показан, подравниваем даты
+                if (document.getElementById('less-controls').style.display != 'none') {
+                    let months = +document.getElementById('months').value
+                    let toDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
+                    let fromDate = dayjs().subtract(months, 'month').format('YYYY-MM-DD')
+                    document.getElementById('to_date').value = toDate
+                    document.getElementById('from_date').value = fromDate
+                }
+
                 
                 url = '/process/search'
                 limit = document.getElementById('limit').value
@@ -142,6 +184,7 @@
                 clearTimeout(getLinksTimeout)
                 getLinksTimeout = setTimeout(getLinks,500)
             }
+
 
             // Builds html links from the object returned by Elastic.
             function getLinksHTML(r) {
@@ -216,6 +259,13 @@
             //     var nextMonth = tomorrow.getMonth()+1
             //     return `${tomorrow.getFullYear()}-${nextMonth.toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`
             // }
+
+            function show(id) {
+                document.getElementById(id).style.display = 'block';
+            }
+            function hide(id) {
+                document.getElementById(id).style.display = 'none';
+            }
 
             document.addEventListener('selectionchange', changeSearchButton)  
             document.addEventListener('keydown', onKeyDown)
