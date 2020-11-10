@@ -179,13 +179,6 @@ Response
    
       sh/server-down.sh   
 
-Старт записных книжек
-
-      sh/notebooks-up.sh  
-
-Останов записных книжек
-
-      sh/notebooks-down.sh
 
 
 Тест библиотек
@@ -236,7 +229,6 @@ Response
 
 **Запуск процессора новых статей**
 
-      ./build-push.sh
       docker run -rm -it -e ...  vadimivlev/text-processor:latest ?????
 
 or 
