@@ -68,6 +68,9 @@ services:
         restart: unless-stopped
         ports:
         - '9555:8080'
+        # to restart container change value
+        environment: 
+            - NNN=1
         volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
         - ./www:/www
