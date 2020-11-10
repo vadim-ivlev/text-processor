@@ -235,9 +235,10 @@ or
 
       python process_articles.py
 
-To build the image and upload it to docker hub :
+## Deploy
 
-      ./build-worker-image.sh
+Перед деплоем необходимо поменять NNN в docker-compose.yml в службе text-processor-caddy. Это ничего не значащая переменная. Это необходима для рестарта text-processor-caddy на боевом сервере.
+
 
 ## Notes
 
