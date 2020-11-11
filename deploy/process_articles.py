@@ -215,11 +215,13 @@ def main():
 
         # извлекаем порцию записей из бд
         new_records, err, duration = repeat_until_success(get_records,50)
-        print(f'-- Got       {len(new_records)} in {duration:.2f} seconds.')
+        if len(new_records) > 0:
+            print(f'-- Получили {len(new_records)} новых записей за {duration:.2f} секунд.')
         
         # если в базе данных нет записей для обработки ждем и начинаем сначала
         if new_records is None or len(new_records) == 0:
-            print(f'Waiting {new_rec_timeout} sec for new records to appear in database ...')
+            dt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f'Ждем {new_rec_timeout} секунд появления новых статей в базе данных. {dt}')
             time.sleep(new_rec_timeout)
             continue
         
