@@ -8,6 +8,7 @@ import simplejson as json
 import os
 import requests
 from pprint import pprint
+import datetime
 
 
 # строка подсоединения к Постгресу
@@ -122,6 +123,7 @@ def save_records_to_elastic(records):
     for record in records:
         elastic_id = record['obj_id']
         lines.append('{"index" : {"_id" : "'+str(elastic_id)+'"}}')
+        record['index_date']=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         lines.append(json.dumps(record, ensure_ascii=False))
     
     saved = save_bulk_to_elastic(lines, ELASTIC_ENDPOINT, ELASTIC_INDEX , RGUSER, RGPASS )

@@ -77,7 +77,9 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
                 },
                 {
                 "range" : {
-                    "date_modified.keyword" : {
+                    # "date_modified.keyword" : {
+                    "date_modified" : {
+                    "format": "yyyy-MM-dd",    
                     "from" : from_date,
                     "to" : to_date,
                     "include_lower" : True,
@@ -116,8 +118,8 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
 #                       data=query_str.encode('utf-8'))
     try:
         rjson=r.json()
-    except:
-        pass
+    except Exception as ex:
+        print(ex)
 
     return rjson
 
