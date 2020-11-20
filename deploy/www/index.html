@@ -115,7 +115,7 @@
         <pre id='res'></pre>
         <div id='links'></div>
         <p></p>
-        <!-- <hr> -->
+        
         <script>
 
             // Врзвращает URL документа очищенный от креденшелов
@@ -153,18 +153,23 @@
                     return error 
                 }
             }
-    
+
+            // показывает результаты запроса как JSON
             async function showJSON(url) {
                 document.getElementById('links').innerText = ''
                 requestResult = await doRequest(url,{text: document.getElementById('txt').value})
                 document.getElementById('res').innerText = JSON.stringify(requestResult,null,2)       
             }
+
+            // показывает результаты запроса как текст
             async function showText(url) {
                 document.getElementById('links').innerText = ''
                 requestResult = await doRequest(url,{text: document.getElementById('txt').value})
                 document.getElementById('res').innerText = requestResult     
             }
-    
+            
+            // Выполняет поиск статей по данным взятым из полей формы,
+            // и показывает результаты.
             async function getLinks(params='') {
                 // Если выбор количества месяцев показан, подравниваем даты
                 if (document.getElementById('less-controls').style.display != 'none') {
@@ -175,7 +180,6 @@
                     document.getElementById('from_date').value = fromDate
                 }
 
-                
                 url = '/process/search'
                 limit = document.getElementById('limit').value
                 fromDate = document.getElementById('from_date').value
@@ -194,14 +198,14 @@
                 changeSearchButton()
             }
 
+            // Запускает поиск с задержкой
             var getLinksTimeout
             function delayGetLinks(params) {
                 clearTimeout(getLinksTimeout)
                 getLinksTimeout = setTimeout(getLinks,500)
             }
 
-
-            // Builds html links from the object returned by Elastic.
+            // Строит список ссылок из результатов поиска Elastic.
             function getLinksHTML(r) {
                 if (r == null)  return ''
                 let h = r['hits']
@@ -220,7 +224,7 @@
                 return links.join('<br>')
             }
     
-            // Builds html links from the object returned by Elastic.
+            // Возвращает строку пояснения перед результатами поиска.
             function getInfo(r) {
                 if (r == null)  return ''
                 let h = r['hits']
@@ -234,8 +238,8 @@
                 <br><br>
                 `
             }  
-    
-    
+
+            // изменяет надпись на кнопке поиска если есть выделенный текст
             function changeSearchButton(){
                 selectedText = document.getSelection().toString()
                 btn = document.getElementById("search-button")
@@ -243,13 +247,13 @@
                 btn.innerHTML = selectedText == ''? 'Искать':'Искать выделенный текст'         
             }  
     
-
+            // чистит от HTML разметки
             function strip(s){
                 return s.replace(/(<([^>]+)>)/gi, "")
             }
-    
-    
 
+            // запускает поиск по нажатию ctrl - Enter,
+            // и поиск по исходному тексту по ctrl - shift - Enter. 
             function onKeyDown(e) {
                 if (e.ctrlKey && e.code=="Enter")
                     if (e.shiftKey) {
@@ -260,32 +264,24 @@
                     }
             }
 
-            
-
-            // function today(dateTime) {
-            //     var d = new Date();
-            //     return `${d.getFullYear()}-${d.getMonth().toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`
-            // }
-
-            // function todayPlusOneDay(dateTime) {
-            //     var d = new Date()
-            //     d.setDate(d.getDate() + 1)
-            //     var tomorrow = d
-            //     var nextMonth = tomorrow.getMonth()+1
-            //     return `${tomorrow.getFullYear()}-${nextMonth.toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`
-            // }
-
+            // показывает элемент по его id 
             function show(id) {
                 document.getElementById(id).style.display = 'block';
             }
+
+            // скрывает  элемент по его id 
             function hide(id) {
                 document.getElementById(id).style.display = 'none';
             }
 
+            // добавляем обработчики клавиатуры и выделения
             document.addEventListener('selectionchange', changeSearchButton)  
             document.addEventListener('keydown', onKeyDown)
             document.getElementById('to_date').value = dayjs().add(1, 'day').format('YYYY-MM-DD')
+            //ищем то что уже есть в поле
             getLinks()
+
+            console.log('Проверка дат: Завтра и два месяца назад')
             console.log(dayjs().add(1, 'day').format('YYYY-MM-DD'))
             console.log(dayjs().subtract(1, 'month').format('YYYY-MM-DD'))
         </script>    
