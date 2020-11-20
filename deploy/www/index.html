@@ -117,10 +117,26 @@
         <p></p>
         <!-- <hr> -->
         <script>
+
+            // Врзвращает URL документа очищенный от креденшелов
+            // и с удаленным последним слэшем если он есть.
+            // Патч по просьбе Макса, чтобы можно было давать редакторам 
+            // ссылку на страницу с уже вставлеными креденшелами.
+            function getPatchedURL() {
+                clearedURL = document.URL.replace(/\/\/.*@/,'//')
+                if (clearedURL.slice(-1) == '/'){
+                    clearedURL = clearedURL.slice(0, -1)
+                }  
+                return clearedURL              
+            }
+
+            // Выполняет POST запрос
             async function doRequest(url, data) {
+                clearedURL = getPatchedURL()
+
                 let result = null
                 try {
-                    let r = await fetch(url,{
+                    let r = await fetch(clearedURL+url,{
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json' },
                         redirect: 'follow', 
@@ -133,6 +149,7 @@
                         return r.text()
                     }
                 } catch (error) {
+                    console.log(error)
                     return error 
                 }
             }
@@ -207,7 +224,7 @@
             function getInfo(r) {
                 if (r == null)  return ''
                 let h = r['hits']
-                if (!h ) return ''
+                if (!h ) return String(r)
                 return `
                 <span>
                 Показаны ${h.hits.length} из ${(h.total.relation == 'gte')?'более чем':''} ${h.total.value} материалов 
