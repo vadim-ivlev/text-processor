@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import inspect
-# from pprint import pprint
+from pprint import pprint
 
 def strip(html):
     """"Очищает текст от разметки"""    
