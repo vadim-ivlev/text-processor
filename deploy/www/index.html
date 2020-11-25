@@ -67,6 +67,15 @@
         <p>
             Вставьте текст. Нажмите кнопку.
             Чтобы искать по участку текста, выделите его.
+            <span>
+                &nbsp;&nbsp;&nbsp;&nbsp; Алгоритм
+                <select id='algorithm' onchange="delayGetLinks()">
+                    <option value="articles">M25</option>
+                    <option value="articles_k20b0">M25 k20b0</option>
+                    <option value="articles_tfidf">TF-IDF</option>
+                </select>
+            </span>
+    
         </p>
         <textarea id="txt">
         </textarea>
@@ -79,13 +88,13 @@
         
         В символической церемонии закладки первого камня в фундамент здания приняла участие специальная южнокорейская правительственная делегация во главе с заместителем министра земельных ресурсов, транспорта и морских дел Чу Сон Хо.            
         -->
-        <div id="less-controls">
+        <p id="less-controls">
             <span>Искать статьи не старше</span>
             <input id='months' type="number" value="2" min="1" max="500" style="width:100px;" onchange="delayGetLinks()">
             <span>месяцев</span>
             <button class="button button-clear" onclick="hide('less-controls'); show('more-controls')">больше ▶</button>
-        </div>
-        <div id="more-controls" style="display: none;">
+        </p>
+        <p id="more-controls" style="display: none;">
             <span>С </span>
             <input type="date" id="from_date" value="2003-01-01"  onchange="getLinks()">
             <span>вплоть до (не включая)</span>
@@ -94,7 +103,8 @@
             <input id='limit' type="number" value="20" min="0" max="500" style="width:100px;" onchange="delayGetLinks()">
             <span>материалов.</span>
             <button class="button button-clear" onclick="hide('more-controls'); show('less-controls')">◀ меньше</button>
-        </div>
+        </p>
+
         <br><br><br>
         
         <button id="search-button" class="main" onclick="getLinks()">Искать</button>
@@ -181,10 +191,11 @@
                 }
 
                 url = '/process/search'
-                limit = document.getElementById('limit').value
-                fromDate = document.getElementById('from_date').value
-                toDate = document.getElementById('to_date').value
-                urlParams = `?limit=${limit}&from_date=${fromDate}&to_date=${toDate}${params}`
+                let limit = document.getElementById('limit').value
+                let fromDate = document.getElementById('from_date').value
+                let toDate = document.getElementById('to_date').value
+                let index = document.getElementById('algorithm').value
+                let urlParams = `?limit=${limit}&from_date=${fromDate}&to_date=${toDate}${params}&index={index}`
 
                 let searchText = document.getSelection().toString()
                 if (searchText == '') 
@@ -200,7 +211,7 @@
 
             // Запускает поиск с задержкой
             var getLinksTimeout
-            function delayGetLinks(params) {
+            function delayGetLinks() {
                 clearTimeout(getLinksTimeout)
                 getLinksTimeout = setTimeout(getLinks,500)
             }

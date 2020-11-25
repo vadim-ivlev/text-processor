@@ -11,13 +11,13 @@ services:
         hostname: text-processor-0
         restart: unless-stopped
         environment: 
+            - ELASTIC_USER=admin
             - RGPASS=${RGPASS}
-            - RGDSN=${RGDSN}
+            # - RGDSN=${RGDSN}
             - ELASTIC_ENDPOINT=http://es01:9200/
             # - ELASTIC_ENDPOINT=http://13.79.79.34:9094/elasticsearch/
             # - ELASTIC_ENDPOINT=http://dockertest.rgwork.ru:9094/elasticsearch/
             # - ELASTIC_ENDPOINT=http://rg-corpus-caddy:8080/elasticsearch/
-            # - ELASTIC_ENDPOINT=http://es01:9200/
 
         command: [ "python", "-u", "./server.py" ]
         # ports: 
@@ -70,7 +70,7 @@ services:
         - '9555:8080'
         # to restart container change value
         environment: 
-            - NNN=3
+            - NNN=5
         volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
         - ./www:/www
@@ -87,6 +87,12 @@ services:
         environment: 
             - RGDSN=${RGDSN}
             - RGPASS=${RGPASS}
+            - ELASTIC_USER=admin
+            - ELASTIC_INDEXES=articles|articles_tfidf|articles_k20b0
+            # - ELASTIC_ENDPOINT=http://es01:9200/
+            # - ELASTIC_ENDPOINT=http://13.79.79.34:9094/elasticsearch/
+            # - ELASTIC_ENDPOINT=http://dockertest.rgwork.ru:9094/elasticsearch/
+            - ELASTIC_ENDPOINT=http://rg-corpus-caddy:8080/elasticsearch/
         command: [ "python", "-u", "./process_articles.py" ]
         
 # outer network to communicate with other services ----------------------------------------------------

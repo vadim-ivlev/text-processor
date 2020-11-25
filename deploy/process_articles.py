@@ -14,14 +14,13 @@ import datetime
 # строка подсоединения к Постгресу
 DSN = os.getenv('RGDSN')
 
-# пользователь и пароль к эластику
-RGUSER = 'admin'
+# эластик
+ELASTIC_USER = os.getenv('ELASTIC_USER')
 RGPASS = os.getenv('RGPASS')
-# elastic endpoint
-ELASTIC_ENDPOINT = "http://rg-corpus-caddy:8080/elasticsearch/"
-# ELASTIC_ENDPOINT = "http://dockertest.rgwork.ru:9094/elasticsearch/"
-ELASTIC_INDEX = 'articles'
-print(f'RGPASS={RGPASS} DSN={DSN}')
+ELASTIC_ENDPOINT = os.getenv('ELASTIC_ENDPOINT')
+ELASTIC_INDEXES = os.getenv('ELASTIC_INDEXES').split('|') if os.getenv('ELASTIC_INDEXES') else []
+
+print(f'RGPASS={RGPASS} DSN={DSN} ELASTIC_ENDPOINT={ELASTIC_ENDPOINT} ELASTIC_INDEXES={ELASTIC_INDEXES}')
 
 
 def execute(DSN,sql, *args):
@@ -126,8 +125,8 @@ def save_records_to_elastic(records):
         record['index_date']=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         lines.append(json.dumps(record, ensure_ascii=False))
     
-    saved = save_bulk_to_elastic(lines, ELASTIC_ENDPOINT, ELASTIC_INDEX , RGUSER, RGPASS )
-    if saved :
+    saved = [save_bulk_to_elastic(lines, ELASTIC_ENDPOINT, index , ELASTIC_USER, RGPASS ) for index in ELASTIC_INDEXES]
+    if all(saved) :
         for record in records:
             record['elastic_status'] = "indexed"
     

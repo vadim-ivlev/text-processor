@@ -54,6 +54,7 @@ def search():
     lemmatize = request.args.get('lemmatize',True)
     from_date = request.args.get('from_date','2000-01-01')
     to_date = request.args.get('to_date','2030-01-01')
+    index = request.args.get('index','articles')
 
     if lemmatize!="false":
         o = text_processor.process_text(text, clear=True)
@@ -61,7 +62,7 @@ def search():
     else:
         logging.warning('NOT lemmatized !!!!')
 
-    search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout, from_date=from_date, to_date=to_date)
+    search_result = elastic.search(text, skip=skip, limit=limit, field=field, timeout=timeout, from_date=from_date, to_date=to_date, index=index)
     return make_response(search_result)
 
 @app.route('/syntax', methods=['POST'])

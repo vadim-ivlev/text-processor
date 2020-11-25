@@ -7,12 +7,24 @@ import inspect
 # from pprint import pprint
 
 def strip(html):
+    """"Очищает текст от разметки"""    
     h = re.sub(r'<','\n<',html)
     return BeautifulSoup(h,features="html.parser").get_text()   
 
 
-def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', from_date='2000-01-01', to_date='2030-01-01')->object:
-
+def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', from_date='2000-01-01', to_date='2030-01-01', index='articles')->object:
+    """Ищет текст.
+    Параметры:
+        text - Текст для поиска
+        field = 'lemmatized_text' - Название поля по которому искать
+        skip = 0 - Сколько Документов пропустить перед выдачей
+        limit = 20 - Максимальное количество возвращаемых Документов
+        timeout = '5s' - Максимальное время поиска
+        lemmatize = True - лемматизировать слова запроса перед поиском
+        from_date = '2000-01-01' - Минимальная дата искомого документа
+        to_date = '2030-01-01'- Максимальная дата искомого документа
+        index = 'articles' - Имя индекса в котором искать документы
+    """
     if from_date == '':
         from_date = '2000-01-01'
     if to_date == '':
@@ -20,10 +32,11 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
 
     loc = locals()
     for arg in inspect.getfullargspec(search).args: print(f'{arg:20}:', loc[arg])
-    # pprint([(f'{arg:20}:', loc[arg]) for arg in inspect.getfullargspec(search).args ])
+    pprint([(f'{arg:20}:', loc[arg]) for arg in inspect.getfullargspec(search).args ])
 
-    username = 'admin'
+    username = os.getenv('ELASTIC_USER')
     password = os.getenv('RGPASS')
+    # Определено в doker-compose
     elastic_endpoint = os.getenv('ELASTIC_ENDPOINT')
 
 # _sql/translate
@@ -111,7 +124,7 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
 
 
     rjson = {}
-    r = requests.post(f'{elastic_endpoint}articles/_search', 
+    r = requests.post(f'{elastic_endpoint}{index}/_search', 
         headers = {'Content-Type': 'application/json; charset=UTF-8'}, 
         auth=(username,password),
         data= json.dumps(q))
