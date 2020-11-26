@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import inspect
-from pprint import pprint
 
 def strip(html):
     """"Очищает текст от разметки"""    
@@ -31,39 +30,25 @@ def search(text:str, skip=0, limit=20, field="lemmatized_text", timeout='5s', fr
         to_date = '2030-01-01'
 
     loc = locals()
+    # печатаем полученные аргументы
     for arg in inspect.getfullargspec(search).args: print(f'{arg:20}:', loc[arg])
-    pprint([(f'{arg:20}:', loc[arg]) for arg in inspect.getfullargspec(search).args ])
 
     username = os.getenv('ELASTIC_USER')
     password = os.getenv('RGPASS')
     # Определено в doker-compose
     elastic_endpoint = os.getenv('ELASTIC_ENDPOINT')
 
-# _sql/translate
-# {
-#   "query": """
-#   SELECT SCORE() AS SCORE,obj_id,date_modified   
-#   FROM articles WHERE 
-#   MATCH(lemmatized_text, 'пингвин') 
-#   AND date_modified.keyword >= '2011-03-03' 
-#   AND date_modified.keyword <= '2012-03-03' 
-#   ORDER BY SCORE DESC
-#   LIMIT 10"""
-# }
-
-    # q = {
-    #     "from": skip,
-    #     "size": limit,
-    #     "timeout": timeout,
-    #     # "track_total_hits": 100,
-    #     "_source": [ "obj_id", "date_modified","title","announce","uannounce", "link_title", "url" ],
-    #     "query": {
-    #         "match": {
-    #         f"{field}": {
-    #             "query": text
-    #             }
-    #         }
-    #     }    
+    # SQL вариант запроса
+    # _sql/translate
+    # {
+    #   "query": """
+    #   SELECT SCORE() AS SCORE,obj_id,date_modified   
+    #   FROM articles WHERE 
+    #   MATCH(lemmatized_text, 'пингвин') 
+    #   AND date_modified.keyword >= '2011-03-03' 
+    #   AND date_modified.keyword <= '2012-03-03' 
+    #   ORDER BY SCORE DESC
+    #   LIMIT 10"""
     # }
 
     q = {

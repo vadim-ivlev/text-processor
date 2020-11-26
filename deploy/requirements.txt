@@ -22,6 +22,7 @@ psycopg2-binary==2.8.6
 pylint==2.2.2
 pymorphy2==0.8
 pymorphy2-dicts==2.4.393442.3710985
+pytz==2020.4
 razdel==0.5.0
 requests==2.24.0
 simplejson==3.17.2

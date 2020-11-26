@@ -195,7 +195,7 @@
                 let fromDate = document.getElementById('from_date').value
                 let toDate = document.getElementById('to_date').value
                 let index = document.getElementById('algorithm').value
-                let urlParams = `?limit=${limit}&from_date=${fromDate}&to_date=${toDate}${params}&index={index}`
+                let urlParams = `?limit=${limit}&from_date=${fromDate}&to_date=${toDate}&index=${index}${params}`
 
                 let searchText = document.getSelection().toString()
                 if (searchText == '') 
