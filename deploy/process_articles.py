@@ -222,7 +222,7 @@ def main():
         # если в базе данных нет записей для обработки ждем и начинаем сначала
         if new_records is None or len(new_records) == 0:
             dt = datetime.datetime.now(pytz.timezone('Europe/Moscow')).strftime('%Y-%m-%d %H:%M:%S')
-            print(f'Ждем {new_rec_timeout} секунд появления новых статей в базе данных. {dt}', end='\r')
+            print(f'Ждем {new_rec_timeout} секунд появления новых статей в базе данных. {dt}', end='\r', flush=True)
             time.sleep(new_rec_timeout)
             continue
         
